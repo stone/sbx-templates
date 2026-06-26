@@ -3,13 +3,25 @@
 Dev-container images for the Docker sandbox (`sbx`), built with **buildx bake**
 and tested with **goss/dgoss**. 
 
+Published to Docker Hub:  https://hub.docker.com/r/ttyse/sbx-templates
+
+Usage:
+
+```sh
+sbx run -t ttyse/sbx-templates:base-latest claude .
+sbx run -t ttyse/sbx-templates:kube-latest claude .
+sbx run -t ttyse/sbx-templates:ansible-latest claude .
+```
+
+
+
 ## Images
 
-| Variant   | Built on          | Tooling                                                                              |
-|-----------|-------------------|--------------------------------------------------------------------------------------|
-| `base`    | sandbox-templates | Neovim (+ `vim`/`vi` symlinks, lazy.nvim config), Go, Lua, LuaRocks, tree-sitter CLI |
-| `kube`    | `base`            | kubectl, kind, flux                                                                  | 
-| `ansible` | `base`            | uv, Python 3.12, ansible, molecule                                                   |                     
+| Variant   | Agent   | Built on          | Tooling                                                                              |
+|-----------|---------|-------------------|--------------------------------------------------------------------------------------|
+| `base`    | claude  | sandbox-templates | Neovim (+ `vim`/`vi` symlinks, lazy.nvim config), Go, Lua, LuaRocks, tree-sitter CLI |
+| `kube`    | claude  | `base`            | kubectl, kind, flux                                                                  | 
+| `ansible` | claude  | `base`            | uv, Python 3.12, ansible, molecule                                                   |                     
 
 User tools live under `/home/agent/.local` and are on the `agent` user's PATH.
 
