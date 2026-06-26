@@ -1,0 +1,48 @@
+command:
+  nvim --version:
+    exit-status: 0
+    stdout:
+      - NVIM
+  vim --version:
+    exit-status: 0
+    stdout:
+      - NVIM
+  vi --version:
+    exit-status: 0
+    stdout:
+      - NVIM
+  go version:
+    exit-status: 0
+    stdout:
+      - "go version"
+  lua -v:
+    exit-status: 0
+    stdout:
+      - Lua
+  luarocks --version:
+    exit-status: 0
+    stdout:
+      - luarocks
+  tree-sitter --version:
+    exit-status: 0
+    stdout:
+      - "tree-sitter"
+
+file:
+  /home/agent/bin/my-script.sh:
+    exists: true
+    mode: "0755"
+    filetype: file
+  /home/agent/.local/opt/go/bin/go:
+    exists: true
+  /home/agent/.local/opt/nvim-linux-x86_64/bin/nvim:
+    exists: true
+  /home/agent/.local/bin/tree-sitter:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/vim:
+    exists: true
+    filetype: symlink
+  /home/agent/.local/bin/vi:
+    exists: true
+    filetype: symlink

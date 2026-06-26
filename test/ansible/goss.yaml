@@ -1,0 +1,32 @@
+command:
+  uv --version:
+    exit-status: 0
+    stdout:
+      - uv
+  python --version:
+    exit-status: 0
+    stdout:
+      - "Python 3.12"
+  ansible --version:
+    exit-status: 0
+    stdout:
+      - ansible
+  ansible-playbook --version:
+    exit-status: 0
+    stdout:
+      - ansible-playbook
+  molecule --version:
+    exit-status: 0
+    stdout:
+      - molecule
+
+file:
+  /home/agent/.local/bin/ansible:
+    exists: true
+    filetype: symlink
+  /home/agent/.local/bin/ansible-playbook:
+    exists: true
+    filetype: symlink
+  /home/agent/.local/bin/molecule:
+    exists: true
+    filetype: symlink

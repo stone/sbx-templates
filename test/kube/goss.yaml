@@ -1,0 +1,24 @@
+command:
+  kubectl version --client:
+    exit-status: 0
+    stdout:
+      - "Client Version"
+  kind --version:
+    exit-status: 0
+    stdout:
+      - "kind version"
+  flux --version:
+    exit-status: 0
+    stdout:
+      - "flux version"
+
+file:
+  /home/agent/.local/bin/kubectl:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/kind:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/flux:
+    exists: true
+    mode: "0755"
