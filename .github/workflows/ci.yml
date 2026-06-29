@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/Dockerfile"
+      - "**/*.hcl"
+      - "test/**"
+      - ".github/workflows/ci.yml"
+  schedule:
+    - cron: "13 3 * * 1" # Mon 03:13 UTC – pick up upstream base image updates
+  workflow_dispatch:
+    inputs:
+      version:
+        description: >-
+          Immutable version suffix pushed alongside :<variant>-latest
+          (e.g. 2026-06-26). Leave blank for today's date.
+        required: false
+        default: ""
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ttyse/sbx-templates
+      GOSS_VERSION: v0.4.9
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Build all images (loaded locally for testing)
+        run: |
+          docker buildx bake \
+            --set "*.cache-from=type=gha,scope=build" \
+            --set "*.cache-to=type=gha,scope=build,mode=max" \
+            --load
+
+      - name: Install goss + dgoss
+        run: |
+          sudo curl -fsSL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" \
+            -o /usr/local/bin/goss
+          sudo chmod +x /usr/local/bin/goss
+          sudo curl -fsSL \
+            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
+            -o /usr/local/bin/dgoss
+          sudo chmod +x /usr/local/bin/dgoss
+
+      - name: Test – base
+        run: |
+          GOSS_FILES_PATH=test/base \
+          dgoss run --entrypoint sleep "${IMAGE}:base-latest" infinity
+
+      - name: Test – kube
+        run: |
+          GOSS_FILES_PATH=test/kube \
+          dgoss run --entrypoint sleep "${IMAGE}:kube-latest" infinity
+
+      - name: Test – ansible
+        run: |
+          GOSS_FILES_PATH=test/ansible \
+          dgoss run --entrypoint sleep "${IMAGE}:ansible-latest" infinity
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.event_name != 'pull_request'
+    environment: release
+    permissions:
+      contents: read
+      packages: write # push to GHCR via GITHUB_TOKEN
+    env:
+      DOCKERHUB_IMAGE: ttyse/sbx-templates
+      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/sbx-templates
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Resolve VERSION
+        id: meta
+        run: |
+          ver="${{ inputs.version }}"
+          echo "version=${ver:-$(date -u +%Y-%m-%d)}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      - name: Login – Docker Hub
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login – GHCR
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push → Docker Hub
+        run: |
+          IMAGE="${{ env.DOCKERHUB_IMAGE }}" \
+          VERSION="${{ steps.meta.outputs.version }}" \
+          docker buildx bake \
+            --set "*.cache-from=type=gha,scope=build" \
+            --push
+
+      - name: Push → GHCR
+        run: |
+          IMAGE="${{ env.GHCR_IMAGE }}" \
+          VERSION="${{ steps.meta.outputs.version }}" \
+          docker buildx bake \
+            --set "*.cache-from=type=gha,scope=build" \
+            --push

@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    rebase-strategy: "disabled"
+    cooldown:
+      default-days: 30
+    directory: /
+    schedule:
+      interval: monthly
+      day: sunday
+      time: "04:00"
+      timezone: UTC
+    groups:
+      docker-actions:
+        patterns: ["docker/*"]
+    commit-message:
+      prefix: "ci"
