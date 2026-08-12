@@ -32,7 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE: ttyse/sbx-templates
-      GOSS_VERSION: v0.4.9
+      # goss for the runner itself. Deliberately NOT named GOSS_VERSION: bake
+      # reads env vars matching its `variable` blocks.
+      GOSS_CLI_VERSION: 0.4.10
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -49,12 +51,12 @@ jobs:
 
       - name: Install goss + dgoss
         run: |
-          sudo curl -fsSL \
-            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/goss-linux-amd64" \
-            -o /usr/local/bin/goss
+          curl -fsSL \
+            "https://github.com/goss-org/goss/releases/download/v${GOSS_CLI_VERSION}/goss_${GOSS_CLI_VERSION}_linux_x86_64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin goss
           sudo chmod +x /usr/local/bin/goss
           sudo curl -fsSL \
-            "https://github.com/goss-org/goss/releases/download/${GOSS_VERSION}/dgoss" \
+            "https://github.com/goss-org/goss/releases/download/v${GOSS_CLI_VERSION}/dgoss" \
             -o /usr/local/bin/dgoss
           sudo chmod +x /usr/local/bin/dgoss
 
