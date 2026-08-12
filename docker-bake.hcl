@@ -34,9 +34,11 @@ function "tags" {
 // --- pinned tool versions ---------------------------------------------------
 variable "GO_VERSION"          { default = "1.26.4" }
 variable "TREE_SITTER_VERSION" { default = "0.26.9" }
-variable "KUBECTL_VERSION"     { default = "1.36.2" }
+variable "KUBECTL_VERSION"     { default = "1.36.3" }
 variable "KIND_VERSION"        { default = "0.32.0" }
-variable "FLUX_VERSION"        { default = "2.8.8" }
+variable "FLUX_VERSION"        { default = "2.9.4" }
+variable "GOSS_VERSION"        { default = "0.4.10" }
+variable "CST_VERSION"         { default = "1.22.1" }
 variable "ANSIBLE_VERSION"     { default = "14.1.0" }
 variable "MOLECULE_VERSION"    { default = "26.4.0" }
 
@@ -66,6 +68,8 @@ target "kube" {
     KUBECTL_VERSION = KUBECTL_VERSION
     KIND_VERSION    = KIND_VERSION
     FLUX_VERSION    = FLUX_VERSION
+    GOSS_VERSION    = GOSS_VERSION
+    CST_VERSION     = CST_VERSION
   }
   tags = tags("kube")
 }
