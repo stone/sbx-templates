@@ -32,15 +32,17 @@ function "tags" {
 }
 
 // --- pinned tool versions ---------------------------------------------------
-variable "GO_VERSION"          { default = "1.26.4" }
-variable "TREE_SITTER_VERSION" { default = "0.26.9" }
-variable "KUBECTL_VERSION"     { default = "1.36.3" }
+variable "GO_VERSION"          { default = "1.27.0" }
+variable "TREE_SITTER_VERSION" { default = "0.26.12" }
+variable "KUBECTL_VERSION"     { default = "1.36.4" }
 variable "KIND_VERSION"        { default = "0.32.0" }
 variable "FLUX_VERSION"        { default = "2.9.4" }
 variable "GOSS_VERSION"        { default = "0.4.10" }
 variable "CST_VERSION"         { default = "1.22.1" }
-variable "ANSIBLE_VERSION"     { default = "14.1.0" }
-variable "MOLECULE_VERSION"    { default = "26.4.0" }
+variable "AGE_VERSION"         { default = "1.3.1" }
+variable "SOPS_VERSION"        { default = "3.13.3" }
+variable "ANSIBLE_VERSION"     { default = "14.3.1" }
+variable "MOLECULE_VERSION"    { default = "26.8.0" }
 
 group "default" {
   targets = ["base", "kube", "ansible"]
@@ -70,6 +72,8 @@ target "kube" {
     FLUX_VERSION    = FLUX_VERSION
     GOSS_VERSION    = GOSS_VERSION
     CST_VERSION     = CST_VERSION
+    AGE_VERSION     = AGE_VERSION
+    SOPS_VERSION    = SOPS_VERSION
   }
   tags = tags("kube")
 }

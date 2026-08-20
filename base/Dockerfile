@@ -1,7 +1,7 @@
 FROM docker/sandbox-templates:claude-code-docker
 
-ARG GO_VERSION=1.22.4
-ARG TREE_SITTER_VERSION=0.26.9
+ARG GO_VERSION
+ARG TREE_SITTER_VERSION
 
 USER root
 RUN apt-get update \
@@ -24,7 +24,7 @@ USER agent
 RUN mkdir -p /home/agent/.local/opt /home/agent/.local/bin
 
 # Go toolchain (user-level).
-RUN curl -fsSL -o /tmp/go.tgz "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" \
+RUN curl -fsSL -o /tmp/go.tgz "https://go.dev/dl/go${GO_VERSION:?}.linux-amd64.tar.gz" \
   && tar -C /home/agent/.local/opt -xzf /tmp/go.tgz \
   && rm /tmp/go.tgz
 ENV GOPATH=/home/agent/go
@@ -37,7 +37,7 @@ RUN curl -fsSL -o /tmp/nvim.tgz https://github.com/neovim/neovim/releases/latest
 ENV PATH=$PATH:/home/agent/.local/opt/nvim-linux-x86_64/bin
 
 # tree-sitter CLI (user-level) — required by nvim-treesitter to build parsers.
-RUN curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/download/v${TREE_SITTER_VERSION}/tree-sitter-linux-x64.gz" \
+RUN curl -fsSL "https://github.com/tree-sitter/tree-sitter/releases/download/v${TREE_SITTER_VERSION:?}/tree-sitter-linux-x64.gz" \
   | gunzip -c > /home/agent/.local/bin/tree-sitter \
   && chmod +x /home/agent/.local/bin/tree-sitter
 

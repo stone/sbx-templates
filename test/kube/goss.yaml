@@ -19,6 +19,18 @@ command:
     exit-status: 0
     stdout:
       - '/^[0-9]+\.[0-9]+\.[0-9]+/'
+  age --version:
+    exit-status: 0
+    stdout:
+      - '/^v[0-9]+\.[0-9]+\.[0-9]+/'
+  age-keygen --version:
+    exit-status: 0
+    stdout:
+      - '/^v[0-9]+\.[0-9]+\.[0-9]+/'
+  sops --version --disable-version-check:
+    exit-status: 0
+    stdout:
+      - "sops"
 
 file:
   /home/agent/.local/bin/kubectl:
@@ -37,5 +49,14 @@ file:
     exists: true
     mode: "0755"
   /home/agent/.local/bin/container-structure-test:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/age:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/age-keygen:
+    exists: true
+    mode: "0755"
+  /home/agent/.local/bin/sops:
     exists: true
     mode: "0755"

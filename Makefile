@@ -5,6 +5,8 @@
 #   make base|kube|ansible
 #   make push           build + push the :<variant>-latest tags
 #   make test           run dgoss tests against all images
+#   make check-versions report tool pins that are behind upstream
+#   make bump-versions  rewrite the pins in docker-bake.hcl with the latest
 #   make clean          remove built images
 #
 # Images share one repo; the variant is the tag (e.g. ttyse/sbx-templates:base-latest).
@@ -21,7 +23,8 @@ IMAGES   := base kube ansible
 # NB: the per-image test targets (test-base, ...) are matched by the `test-%`
 # pattern rule below and must NOT be listed here — GNU make excludes .PHONY
 # targets from pattern-rule matching, which would break them.
-.PHONY: all build push base kube ansible builder test clean
+.PHONY: all build push base kube ansible builder test clean \
+	check-versions bump-versions
 
 all: build
 
@@ -48,6 +51,14 @@ test: $(addprefix test-,$(IMAGES))
 ## dgoss test a single image; keeps the container alive via `sleep infinity`
 test-%:
 	GOSS_FILES_PATH=test/$* dgoss run --entrypoint sleep $(IMAGE):$*-latest infinity
+
+## report pinned tool versions that are behind upstream (tool: old -> new)
+check-versions:
+	@scripts/check-versions.sh
+
+## apply the latest versions to the pins in docker-bake.hcl
+bump-versions:
+	@scripts/check-versions.sh --write
 
 ## remove the built images
 clean:

@@ -20,7 +20,7 @@ sbx run -t ttyse/sbx-templates:ansible-latest claude .
 | Variant   | Agent   | Built on          | Tooling                                                                              |
 |-----------|---------|-------------------|--------------------------------------------------------------------------------------|
 | `base`    | claude  | sandbox-templates | Neovim (+ `vim`/`vi` symlinks, lazy.nvim config), Go, Lua, LuaRocks, tree-sitter CLI |
-| `kube`    | claude  | `base`            | kubectl, kind, flux                                                                  | 
+| `kube`    | claude  | `base`            | kubectl, kind, flux, age, sops                                                       | 
 | `ansible` | claude  | `base`            | uv, Python 3.12, ansible, molecule                                                   |                     
 
 User tools live under `/home/agent/.local` and are on the `agent` user's PATH.
@@ -36,6 +36,7 @@ User tools live under `/home/agent/.local` and are on the `agent` user's PATH.
 │   └── files/home/agent/    # copied into the image home dir (scripts, nvim config)
 ├── kube/Dockerfile
 ├── ansible/Dockerfile
+├── scripts/check-versions.sh # upstream version check / pin bumping
 └── test/{base,kube,ansible}/goss.yaml
 ```
 
@@ -50,8 +51,3 @@ VERSION=2026-06-26 make push    # ...also :<variant>-2026-06-26
 IMAGE=ghcr.io/you/sbx make push # publish to a different repo
 ```
 
-## Versions
-
-Tool versions are pinned as variables in `docker-bake.hcl` (`GO_VERSION`,
-`KUBECTL_VERSION`, `TREE_SITTER_VERSION`, …); override on the CLI, e.g.
-`KUBECTL_VERSION=1.31.0 make kube`. 
